@@ -1,0 +1,89 @@
+/**:
+  ros__parameters:
+    common:
+      img_topic: "/sync/image"
+      lid_topic: "/velodyne_points"
+      imu_topic: "/sync/imu"
+      img_en: 1
+      lidar_en: 1
+      ros_driver_bug_fix: false
+
+    extrin_calib:
+      extrinsic_T: [-2.0, 0.0, 0.4]
+      extrinsic_R: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
+      Rcl: [0.0, -1.0, 0.0, 0.0, 0.0, -1.0, 1.0, 0.0, 0.0]
+      Pcl: [0.0, -0.3, -0.4]
+
+    time_offset: 
+      imu_time_offset: 0.0
+      img_time_offset: 0.0
+      exposure_time_init: 0.0
+
+    preprocess:
+      point_filter_num: 1
+      filter_size_surf: 0.3  # ← 0.5m: safe for PCL VoxelGrid integer bounds
+      filter_size_map: 0.3    # ← increased to prevent PCL overflow
+      lidar_type: 2
+      scan_line: 32   
+      blind: 4.0
+
+    vio:
+      max_iterations: 5
+      outlier_threshold: 1000
+      img_point_cov: 1000
+      patch_size: 8
+      patch_pyrimid_level: 4
+      normal_en: false
+      raycast_en: false
+      inverse_composition_en: false
+      exposure_estimate_en: false
+      inv_expo_cov: 0.1
+
+    imu:
+      imu_en: true
+      imu_int_frame: 20
+      acc_cov: 0.1
+      gyr_cov: 0.01 
+      b_acc_cov: 0.0001
+      b_gyr_cov: 0.0001
+
+    lio:
+      max_iterations: 5
+      dept_err: 0.02
+      beam_err: 0.05
+      min_eigen_value: 0.05
+      voxel_size: 2.0
+      max_layer: 2
+      max_points_num: 100
+      layer_init_num: [5, 5, 5, 5, 5]
+
+    local_map:  
+      map_sliding_en: false    # ← disabled: sliding was deleting map before ICP could bootstrap
+      half_map_size: 200       # ← reduce from 500
+      sliding_thresh: 50.0     # ← reduce from 100.0
+
+    uav:
+      imu_rate_odom: false
+      gravity_align_en: True
+
+    publish:
+      dense_map_en: true
+      pub_effect_point_en: true
+      pub_plane_en: false
+      pub_scan_num: 1
+      blind_rgb_points: 0.0
+
+    evo:
+      seq_name: "carla"
+      pose_output_en: true
+
+    pcd_save:
+      pcd_save_en: true
+      type: 0
+      colmap_output_en: false
+      filter_size_pcd: 0.15
+      interval: -1
+
+    image_save:
+      img_save_en: false
+      interval: 1

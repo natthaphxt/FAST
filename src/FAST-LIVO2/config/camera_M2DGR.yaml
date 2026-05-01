@@ -1,0 +1,17 @@
+# M2DGR Camera-Left Intrinsics
+# From calibration_results.txt
+
+image_width: 1280
+image_height: 1024
+
+camera_name: camera_left
+camera_model: pinhole
+
+# Intrinsic parameters [fx, fy, cx, cy]
+intrinsics: [540.645056202188, 539.8545023658869, 626.4125666883942, 523.947634226782]
+
+# Distortion model: radtan (radial-tangential)
+distortion_model: radtan
+
+# Distortion coefficients [k1, k2, p1, p2]
+distortion_coefficients: [-0.07015146608431883, 0.008586142263125124, -0.021968993685891842, 0.007442211946112636]

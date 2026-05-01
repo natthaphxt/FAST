@@ -1,0 +1,29 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/home/fibo5/fast_ws/install/vikit_ros/include/**",
+        "/home/fibo5/fast_ws/install/livox_ros_driver2/include/**",
+        "/home/fibo5/carla-ros-bridge/install/carla_waypoint_types/include/**",
+        "/home/fibo5/carla-ros-bridge/install/carla_ros_scenario_runner_types/include/**",
+        "/home/fibo5/carla-ros-bridge/install/carla_ackermann_msgs/include/**",
+        "/home/fibo5/carla-ros-bridge/install/carla_msgs/include/**",
+        "/opt/ros/humble/include/**",
+        "/home/fibo5/fast_ws/src/FAST-LIVO2/include/**",
+        "/home/fibo5/fast_ws/src/rpg_vikit/vikit_common/include/**",
+        "/home/fibo5/fast_ws/src/rpg_vikit/vikit_ros/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}

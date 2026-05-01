@@ -1,0 +1,18 @@
+/**:
+  ros__parameters:
+    cam_model: Pinhole
+    cam_width: 720
+    cam_height: 540
+    scale: 1.0
+    
+    # Intrinsics scaled for 720x540 resolution
+    cam_fx: 325.0
+    cam_fy: 243.0
+    cam_cx: 360.0
+    cam_cy: 270.0
+    
+    # Distortion coefficients
+    cam_d0: -0.0073
+    cam_d1: 0.0190
+    cam_d2: -0.0224
+    cam_d3: 0.0052
