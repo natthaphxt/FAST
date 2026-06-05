@@ -12,6 +12,7 @@ which is included as part of this source code package.
 
 #include "LIVMapper.h"
 #include <vikit/camera_loader.h>
+#include <pcl/io/pcd_io.h>
 
 using namespace Sophus;
 LIVMapper::LIVMapper(rclcpp::Node::SharedPtr &node, std::string node_name)
@@ -59,6 +60,7 @@ void LIVMapper::readParameters(rclcpp::Node::SharedPtr &node)
   this->node->declare_parameter<int>("common.img_en", 1);
   this->node->declare_parameter<int>("common.lidar_en", 1);
   this->node->declare_parameter<std::string>("common.img_topic", "/left_camera/image");
+  this->node->declare_parameter<std::string>("common.prior_map_path", "");
 
   this->node->declare_parameter<bool>("vio.normal_en", true);
   this->node->declare_parameter<bool>("vio.inverse_composition_en", false);
@@ -123,6 +125,7 @@ void LIVMapper::readParameters(rclcpp::Node::SharedPtr &node)
   this->node->get_parameter("common.img_en", img_en);
   this->node->get_parameter("common.lidar_en", lidar_en);
   this->node->get_parameter("common.img_topic", img_topic);
+  this->node->get_parameter("common.prior_map_path", prior_map_path);
 
   this->node->get_parameter("vio.normal_en", normal_en);
   this->node->get_parameter("vio.inverse_composition_en", inverse_composition_en);
@@ -226,6 +229,33 @@ void LIVMapper::initializeComponents(rclcpp::Node::SharedPtr &node)
   if (!exposure_estimate_en) p_imu->disable_exposure_est();
 
   slam_mode_ = (img_en && lidar_en) ? LIVO : imu_en ? ONLY_LIO : ONLY_LO;
+
+  if (!prior_map_path.empty())
+  {
+    RCLCPP_INFO(this->node->get_logger(), "Loading prior map: %s", prior_map_path.c_str());
+    pcl::PointCloud<pcl::PointXYZRGB>::Ptr prior_cloud(new pcl::PointCloud<pcl::PointXYZRGB>);
+    if (pcl::io::loadPCDFile(prior_map_path, *prior_cloud) == 0)
+    {
+      std::vector<pointWithVar> points_with_var;
+      points_with_var.reserve(prior_cloud->points.size());
+      const Eigen::Matrix3d prior_var = Eigen::Matrix3d::Identity() * 0.01;
+      for (const auto &pt : prior_cloud->points)
+      {
+        pointWithVar pv;
+        pv.point_w = Eigen::Vector3d(pt.x, pt.y, pt.z);
+        pv.var = prior_var;
+        points_with_var.push_back(pv);
+      }
+      voxelmap_manager->UpdateVoxelMap(points_with_var);
+      lidar_map_inited = true;
+      RCLCPP_INFO(this->node->get_logger(), "Prior map loaded: %zu points, %zu voxels",
+                  prior_cloud->points.size(), voxelmap_manager->voxel_map_.size());
+    }
+    else
+    {
+      RCLCPP_WARN(this->node->get_logger(), "Failed to load prior map; starting empty");
+    }
+  }
 }
 
 void LIVMapper::initializeFiles() 

@@ -73,7 +73,7 @@ def generate_launch_description():
     
     # Use TimerAction to delay FAST-LIVO2 start (gives parameter server time to initialize)
     delayed_fast_livo = TimerAction(
-        period=2.0,  # 2 second delay
+        period=5.0,  # 5 second delay — gives parameter_blackboard time on slow start
         actions=[fast_livo_node]
     )
     

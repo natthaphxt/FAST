@@ -77,7 +77,7 @@
       blind_rgb_points: 1.0
 
     evo:
-      seq_name: "eee_01"
+      seq_name: "eee_03_livo"
       pose_output_en: true
 
     pcd_save:

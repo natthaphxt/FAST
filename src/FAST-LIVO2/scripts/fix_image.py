@@ -1,10 +1,41 @@
 #!/usr/bin/env python3
-"""Fix image encoding for FAST-LIVO2 - ensure clean rgb8 with correct step."""
+"""Fix image encoding for FAST-LIVO2 - ensure clean rgb8 with correct step.
+
+Also masks out the car hood at the bottom of the frame so feature extraction
+ignores static-on-vehicle pixels.
+
+Set env var FIX_IMAGE_NO_MASK=1 to disable hood mask (for ablation test).
+"""
+import os
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 import numpy as np
 import struct
+
+DISABLE_HOOD_MASK = os.environ.get('FIX_IMAGE_NO_MASK', '0') == '1'
+
+# Hood top edge — list of (x, y) anchors describing the top boundary of the
+# car hood from left to right. Everything BELOW this curve is masked black.
+# Image is 672×376. Center is highest (windshield wiper peak), sides slope down.
+# Tune these if the mask cuts road or leaves visible hood.
+HOOD_TOP_POINTS = [
+    (0,   340),
+    (75,  325),
+    (250, 295),
+    (336, 275),   # wiper peak (image center)
+    (422, 295),
+    (597, 325),
+    (672, 340),
+]
+
+def build_hood_mask(width, height):
+    """Boolean mask: True for pixels under the hood polygon (to be zeroed)."""
+    xs, ys = zip(*HOOD_TOP_POINTS)
+    y_top = np.interp(np.arange(width), xs, ys).astype(np.int32)
+    rows = np.arange(height).reshape(-1, 1)
+    return rows >= y_top.reshape(1, -1)
+
 
 class FixImage(Node):
     def __init__(self):
@@ -12,6 +43,7 @@ class FixImage(Node):
         self.sub = self.create_subscription(Image, '/zed2/camera/left/image_raw', self.cb, 10)
         self.pub = self.create_publisher(Image, '/camera/image_fixed', 10)
         self.count = 0
+        self.hood_mask = None  # (height, width) bool, lazily built once
 
     def cb(self, msg):
         try:
@@ -46,6 +78,14 @@ class FixImage(Node):
                 if self.count == 0:
                     self.get_logger().info('Normal bgr8->rgb8 conversion')
             
+            # Mask out the car hood (polygon-shaped, computed once)
+            if not DISABLE_HOOD_MASK:
+                if self.hood_mask is None or self.hood_mask.shape != (msg.height, msg.width):
+                    self.hood_mask = build_hood_mask(msg.width, msg.height)
+                rgb[self.hood_mask] = 0
+            elif self.count == 0:
+                self.get_logger().info('FIX_IMAGE_NO_MASK=1 — hood mask DISABLED')
+
             out = Image()
             out.header = msg.header
             out.height = msg.height

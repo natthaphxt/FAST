@@ -5,7 +5,7 @@ import os
 
 def generate_launch_description():
     config_file = os.path.expanduser('~/fast_ws/src/FAST-LIVO2/config/carla.yaml')
-    rviz_config = os.path.expanduser('~/fast_ws/src/FAST-LIVO2/rviz_cfg/carla.rviz')
+    rviz_config = os.path.expanduser('~/fast_ws/src/FAST-LIVO2/rviz_cfg/fast_livo2.rviz')
     
     camera_params = {
         'cam_model': 'Pinhole',
@@ -52,17 +52,17 @@ def generate_launch_description():
             ]
         ),
         
-        # TimerAction(
-        #     period=3.0,
-        #     actions=[
-        #         Node(
-        #             package='rviz2',
-        #             executable='rviz2',
-        #             name='rviz2',
-        #             output='screen',
-        #             arguments=['-d', rviz_config] if os.path.exists(rviz_config) else [],
-        #             parameters=[{'use_sim_time': True}]
-        #         )
-        #     ]
-        # )
+        TimerAction(
+            period=3.0,
+            actions=[
+                Node(
+                    package='rviz2',
+                    executable='rviz2',
+                    name='rviz2',
+                    output='screen',
+                    arguments=['-d', rviz_config] if os.path.exists(rviz_config) else [],
+                    parameters=[{'use_sim_time': True}]
+                )
+            ]
+        )
     ])

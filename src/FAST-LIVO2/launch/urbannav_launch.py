@@ -34,7 +34,6 @@ def generate_launch_description():
             parameters=[camera_params]
         ),
 
-        # Convert /zed2/camera/left/image_raw (bgr8) -> /camera/image_fixed (rgb8)
         ExecuteProcess(
             cmd=['python3', fix_image_script],
             output='screen'

@@ -76,6 +76,7 @@ public:
   
   string root_dir;
   string lid_topic, imu_topic, seq_name, img_topic;
+  string prior_map_path;
   V3D extT;
   M3D extR;
 
